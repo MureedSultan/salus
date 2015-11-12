@@ -1,0 +1,44 @@
+
+server {
+    listen 80;
+    server_name salus.dev.mureedsultan.com www.salus.dev.mureedsultan.com;
+    index index.php index.html;
+    autoindex on;
+    root "/var/www/salus/";
+
+    location ~*  \.(jpg|jpeg|png|gif|ico|css|js|svg)$ {
+      expires 1w;
+     }
+
+    location / {
+        try_files $uri $uri/ =404;
+        if (-f $document_root$uri.html) {
+            rewrite ^(.*)$ /$uri.html;
+        }
+        if (-f $document_root$uri.php) {
+            rewrite ^(.*)$ /$uri.php;
+        }
+        rewrite ^/staff/([^/]*)$ /staff.php?staff=$1 last;
+        rewrite ^/board/([^/]*)$ /board.php?staff=$1 last;
+        rewrite ^/press-releases/([^/]*)$ /press-releases.php?pr=$1 last;
+    }
+
+    error_page 401 /error.php?error=401;
+    error_page 403 /error.php?error=403;
+    error_page 404 /error.php?error=404;
+    error_page 500 /error.php?error=500;
+    error_page 503 /error.php?error=503;
+    location  /error.php {
+      internal;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_read_timeout 3000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
