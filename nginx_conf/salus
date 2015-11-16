@@ -1,8 +1,4 @@
 server {
-    listen 80 default_server;
-    return 301 http://salustelehealth.com;
-}
-server {
     listen 80;
     server_name salustelehealth.com www.salustelehealth.com;
     index index.php index.html;
